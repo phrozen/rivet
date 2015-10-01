@@ -1,6 +1,6 @@
 # Rivet
 
-**Rivet is a Work in Proggress**
+**Rivet is a Work in Progress**
 
 Rivet is a SaaS key/value store written in Go using [Echo](https://github.com/labstack/echo) framework and [BoltDB](https://github.com/boltdb/bolt) and it is designed with simplicity and performance in mind.
 
