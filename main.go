@@ -1,25 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
-	//"github.com/tylerb/graceful"
 )
 
 func main() {
-
+	
 	app := NewApp()
-	app.Initialize()
-	defer app.dbs.Close()
-	defer app.dba.Close()
+	defer app.System.DB().Close()
+	for _, db := range(app.Store) {
+		defer db.DB().Close()
+	}
 
 	e := echo.New()
-	e.Use(mw.Logger())
-
-	e.Get("/echo/*", func(c *echo.Context) error {
-		return c.String(200, c.Param("_*"))
-	})
 
 	e.Get("/login", app.Login)
 	e.Get("/logout", app.Logout)
@@ -33,7 +26,6 @@ func main() {
 	s.Delete("/:user/*", app.Delete)
 	s.WebSocket("/:user/websocket", app.WebSocket)
 
-	fmt.Println("Listening on port:", app.port)
-	e.Run(":" + app.port)
-	//graceful.ListenAndServe(e.Server(":"+app.port), 0)
+	e.Run(":" + app.Config.Port)
+
 }

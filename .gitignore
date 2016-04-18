@@ -1,2 +1,5 @@
 *.exe
 *.db
+data/
+test/
+rivet
