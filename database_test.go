@@ -7,7 +7,7 @@ import (
 var testdb *BoltDB
 var err error
 
-
+// Create a new Test database
 func TestNewBoltDB(t *testing.T) {
 	testdb, err = NewBoltDB("test.db")
 	if err != nil {
@@ -15,6 +15,7 @@ func TestNewBoltDB(t *testing.T) {
 	}
 }
 
+// Bucket creation
 func TestCreateBucketIfNotExist(t *testing.T) {
 	err = testdb.CreateBucketIfNotExist("test")
 	if err != nil {
