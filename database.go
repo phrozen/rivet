@@ -112,10 +112,11 @@ func (bd BoltDB) CreateBucketIfNotExist(bucket string) error {
 
 // Returns the size of the database in bytes, used to check for
 // storage limits and Content-Length header when backing up.
-func (bd BoltDB) Size() int64 {
-	return bd.db.View(func(tx *bolt.Tx) error {
-		return tx.Size()
+func (bd BoltDB) Size() (size int64) {
+	bd.db.View(func(tx *bolt.Tx) error {
+		size = tx.Size()
 	})
+	return size
 }
 
 // Backups the entire database to the given io.Writer() interface.
