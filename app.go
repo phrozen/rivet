@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 )
 
 type App struct {
@@ -18,7 +18,12 @@ func NewApp(cfg *Config) *App {
 	} else {
 		app.Config = cfg
 	}
-	app.System = NewBoltDB(app.Config.DatabasePath + "/system.db")
+	
+	var err error
+	app.System, err = NewBoltDB(app.Config.DatabasePath + "system.db")
+	if err != nil {
+		panic(err)
+	}
 	
 	systemBuckets := []string{"admin", "user", "session", "stat", "log"}
 	for _, bucket := range systemBuckets {
@@ -32,7 +37,10 @@ func NewApp(cfg *Config) *App {
 	users := app.System.All("user", "", 0)
 
 	for _, u := range(users) {
-		app.Store[u] = NewBoltDB(app.Config.DatabasePath + "/store/"+u+".db")
+		app.Store[u], err = NewBoltDB(app.Config.DatabasePath + "/store/"+u+".db")
+		if err != nil {
+			panic(err)
+		}
 		err := app.Store[u].CreateBucketIfNotExist("store")
         if err != nil {
             panic(err)

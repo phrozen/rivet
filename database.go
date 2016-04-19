@@ -15,12 +15,12 @@ type BoltDB struct {
 }
 
 // Creates a new BoltDB database given the *bolt.DB handler
-func NewBoltDB(path string) *BoltDB {
+func NewBoltDB(path string) (*BoltDB, error) {
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return &BoltDB{db}
+	return &BoltDB{db}, nil
 }
 
 // Returns the BoltDB raw database handler
@@ -115,6 +115,7 @@ func (bd BoltDB) CreateBucketIfNotExist(bucket string) error {
 func (bd BoltDB) Size() (size int64) {
 	bd.db.View(func(tx *bolt.Tx) error {
 		size = tx.Size()
+		return nil
 	})
 	return size
 }

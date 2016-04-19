@@ -6,7 +6,7 @@ import (
 )
 
 const (
-    LIMIT = 1000
+    LIMIT = 10000
 )
 
 type Config struct {
