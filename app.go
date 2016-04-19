@@ -10,10 +10,14 @@ type App struct {
 	Config 	*Config
 }
 
-func NewApp() *App {
+func NewApp(cfg *Config) *App {
 	app := new(App)
 	
-	app.Config = NewConfig()
+	if cfg == nil {
+		app.Config = NewConfig()
+	} else {
+		app.Config = cfg
+	}
 	app.System = NewBoltDB(app.Config.DatabasePath + "/system.db")
 	
 	systemBuckets := []string{"admin", "user", "session", "stat", "log"}
