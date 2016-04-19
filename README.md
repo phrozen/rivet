@@ -1,6 +1,6 @@
 # Rivet
 
-**Rivet is a Work in Progress**
+**Rivet is in early stages and the API can change.**
 
 Rivet is a SaaS key/value store written in Go using [Echo](https://github.com/labstack/echo) framework and [BoltDB](https://github.com/boltdb/bolt) and it is designed with simplicity and performance in mind.
 
@@ -9,12 +9,13 @@ Rivet is a SaaS key/value store written in Go using [Echo](https://github.com/la
 + Fast
 + Simple to use
 + No external dependecies
-+ Simple CLI configuration
++ Simple configuration
 + User based storage
 + Basic Authentication (preferably over SSL or private networking)
 + Sessions based on token headers
 + CORS configuration
 + CRUD operations on keys with binary string values
++ Database backups and Snapshots
 
 ### Usage
 
@@ -77,10 +78,9 @@ It is noted that with key/value data stores, *POST* and *PUT* operations realize
 *(Not implemented yet)*
 
 ### Todo
-+ Key Search
++ Key Search/Prefix Search
 + Websocket support
-+ Multiple Session Tokens
++ Multiple Session Tokens/Read Only Tokens
 + Admin web interface
 + Database Stats/Logs
-+ Snapshots (backup)
 + Hot Swap
