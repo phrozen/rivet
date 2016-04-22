@@ -5,10 +5,10 @@ import (
 )
 
 func main() {
-	
+
 	app := NewApp(nil)
 	defer app.System.DB().Close()
-	for _, db := range(app.Store) {
+	for _, db := range app.Store {
 		defer db.DB().Close()
 	}
 

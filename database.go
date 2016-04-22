@@ -8,10 +8,9 @@ import (
 
 // BoltDB Wrappers
 
-
 // Wrapper for the BoltDB handler
 type BoltDB struct {
-    db *bolt.DB
+	db *bolt.DB
 }
 
 // Creates a new BoltDB database given the *bolt.DB handler
@@ -25,18 +24,18 @@ func NewBoltDB(path string) (*BoltDB, error) {
 
 // Returns the BoltDB raw database handler
 func (bd BoltDB) DB() *bolt.DB {
-    return bd.db
+	return bd.db
 }
 
 // Return true if the key in bucket exists, false otherwise.
 func (bd BoltDB) Has(bucket, key string) bool {
-    exist := false
-    bd.db.View(func(tx *bolt.Tx) error {
+	exist := false
+	bd.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		if val := b.Get([]byte(key)); val != nil {
 			exist = true
 		}
-        return nil
+		return nil
 	})
 	return exist
 }
@@ -45,25 +44,27 @@ func (bd BoltDB) Has(bucket, key string) bool {
 // If offset is "" then starts from the first key available.
 // Limit specifies the max length of the array, if 0, then de MAX_LIMIT default will be used.
 func (bd BoltDB) All(bucket, offset string, limit int) []string {
-    //Negative numbers defaults to MAX_LIMIT too.
-    if limit <= 0 {
-        limit = LIMIT
-    }
-    // string array to copy all keys
+	//Negative numbers defaults to MAX_LIMIT too.
+	if limit <= 0 {
+		limit = LIMIT
+	}
+	// string array to copy all keys
 	data := make([]string, 0)
 	bd.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		c := b.Cursor()
-        
-        // If offset exists we Seek for the key and start there, first item otherwise
-        start, _ := c.First()
-        if offset != "" {
-            start, _ = c.Seek([]byte(offset))
-        }
+
+		// If offset exists we Seek for the key and start there, first item otherwise
+		start, _ := c.First()
+		if offset != "" {
+			start, _ = c.Seek([]byte(offset))
+		}
 
 		for k := start; k != nil; k, _ = c.Next() {
 			data = append(data, string(k))
-            if len(data) == limit { break }
+			if len(data) == limit {
+				break
+			}
 		}
 
 		return nil
@@ -73,7 +74,7 @@ func (bd BoltDB) All(bucket, offset string, limit int) []string {
 
 // Get the value of the desired key inside the bucket.
 func (bd BoltDB) Get(bucket, key string) []byte {
-    var data []byte
+	var data []byte
 	bd.db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		v := b.Get([]byte(key))
@@ -88,7 +89,7 @@ func (bd BoltDB) Get(bucket, key string) []byte {
 
 // Set the value of the given key inside the bucket.
 func (bd BoltDB) Set(bucket, key string, value []byte) error {
-    return bd.db.Update(func(tx *bolt.Tx) error {
+	return bd.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		return b.Put([]byte(key), value)
 	})
@@ -96,7 +97,7 @@ func (bd BoltDB) Set(bucket, key string, value []byte) error {
 
 // Delete the value of the given key inside the bucket.
 func (bd BoltDB) Del(bucket, key string) error {
-    return bd.db.Update(func(tx *bolt.Tx) error {
+	return bd.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
 		return b.Delete([]byte(key))
 	})
@@ -104,10 +105,10 @@ func (bd BoltDB) Del(bucket, key string) error {
 
 // Creates Bucket if it does not exist
 func (bd BoltDB) CreateBucketIfNotExist(bucket string) error {
-    return bd.db.Update(func(tx *bolt.Tx) error {
+	return bd.db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(bucket))
 		return err
-    })
+	})
 }
 
 // Returns the size of the database in bytes, used to check for
@@ -125,7 +126,7 @@ func (bd BoltDB) Size() (size int64) {
 // for backup purposes via http or timestamp.
 func (bd BoltDB) Backup(w io.Writer) error {
 	return bd.db.View(func(tx *bolt.Tx) error {
-        _, err := tx.WriteTo(w)
-        return err
-    })
+		_, err := tx.WriteTo(w)
+		return err
+	})
 }

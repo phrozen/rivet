@@ -5,8 +5,8 @@ import (
 	"encoding/hex"
 	"io"
 	"net/http"
-    // Framework
-    "github.com/labstack/echo"
+	// Framework
+	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,13 +28,13 @@ func (app *App) SetUserPassword(username, password string) error {
 		return err
 	}
 	// Save the new user
-    return app.System.Set("user", username, hash)
+	return app.System.Set("user", username, hash)
 }
 
 // Authenticates username/passsword combination.
 func (app *App) Authenticate(username, password string) bool {
 	//Check if user exists
-    hash := app.System.Get("user", username)
+	hash := app.System.Get("user", username)
 	if hash == nil {
 		return false
 	}
@@ -48,7 +48,7 @@ func (app *App) Authenticate(username, password string) bool {
 // Creates a new Session Token for the user, saves the session and returns a session token.
 func (app *App) NewSession(user string) string {
 	// Check if session already exists and return the existing token
-    token := app.System.Get("session", user)
+	token := app.System.Get("session", user)
 	if token != nil {
 		return hex.EncodeToString(token)
 	}
@@ -57,7 +57,7 @@ func (app *App) NewSession(user string) string {
 	token = GenerateRandomKey(32)
 
 	// Update user<->token key, values
-    err := app.System.Set("session", user, token)
+	err := app.System.Set("session", user, token)
 	if err != nil {
 		return "ERROR" // BoltDB error [500]
 	}
@@ -67,17 +67,17 @@ func (app *App) NewSession(user string) string {
 
 func (app *App) DestroySession(user string) error {
 	// If token doesn't exist just return
-    token := app.System.Get("session", user)
+	token := app.System.Get("session", user)
 	if token == nil {
 		return nil
 	}
 	// Delete user<->token
-    return app.System.Del("session", user)
+	return app.System.Del("session", user)
 }
 
 // Authentication middleware using Session Tokens, every request handled is checked
 // for the X-Session-Token Header, decodes the session and authenticates the user to
-// it's resources in the store. Returns [400] for a bad token, [401] for non valid 
+// it's resources in the store. Returns [400] for a bad token, [401] for non valid
 // sessions, and proceeds with request otherwise.
 func Auth(app *App) echo.HandlerFunc {
 
@@ -99,7 +99,7 @@ func Auth(app *App) echo.HandlerFunc {
 
 		// If Session Token is not found (maybe no longer valid due to logout)
 		// client gets [401] should login again
-        session := app.System.Get("session", c.Param("user"))
+		session := app.System.Get("session", c.Param("user"))
 		if session == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized)
 		}
@@ -108,7 +108,7 @@ func Auth(app *App) echo.HandlerFunc {
 		if string(token) != string(session) {
 			return echo.NewHTTPError(http.StatusUnauthorized)
 		}
-		
+
 		return nil
 	}
 

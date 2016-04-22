@@ -2,25 +2,24 @@ package main
 
 import (
 	"flag"
-    "os"
+	"os"
 )
 
 const (
-    LIMIT = 10000
+	LIMIT = 10000
 )
 
 type Config struct {
-    // Server
-	Port          string
-    // Database
-    DatabasePath  string
+	// Server
+	Port string
+	// Database
+	DatabasePath string
 }
 
 func NewConfig() *Config {
-    cfg := new(Config)
-    flag.StringVar(&cfg.DatabasePath, "db", os.Getenv("RIVET_DATABASE_PATH"), "Path/folder to store/open the database files.")
+	cfg := new(Config)
+	flag.StringVar(&cfg.DatabasePath, "db", os.Getenv("RIVET_DATABASE_PATH"), "Path/folder to store/open the database files.")
 	flag.StringVar(&cfg.Port, "port", os.Getenv("PORT"), "Port to listen.")
-    flag.Parse()
-    return cfg
+	flag.Parse()
+	return cfg
 }
-    
