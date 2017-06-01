@@ -1,25 +1,26 @@
 package main
 
 import (
-	"github.com/labstack/echo"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/labstack/echo"
 )
 
 // #ROUTES
 
 // Lists all the keys in the bucket starting from "offset" key up to "limit" number of keys.
 // This returns all the keys joined by "\n" so a simple split will give back an array.
-func (app *App) List(c *echo.Context) error {
+func (app *App) List(c echo.Context) error {
 	// Check that we can parse limit, ignore errors
-	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
+	limit, err := strconv.ParseInt(c.QueryParam("limit"), 10, 64)
 	if err != nil {
 		limit = LIMIT
 	}
 	// Get all keys up to limit
-	data := app.Store[c.Param("user")].All("store", c.Query("offset"), int(limit))
+	data := app.Store[c.Param("user")].All("store", c.QueryParam("offset"), int(limit))
 	// Join the array with new lines
 	return c.String(http.StatusOK, strings.Join(data, "\n"))
 }
@@ -27,7 +28,7 @@ func (app *App) List(c *echo.Context) error {
 // Sets a value for key if not exist, returns [201] on creation, [200] if existed,
 // [400] if request body can't be read, and [500] if error saving the data.
 // Different status codes are useful to know if they key existed previously.
-func (app *App) Create(c *echo.Context) error {
+func (app *App) Create(c echo.Context) error {
 	// If request body can't be read, return [400]
 	data, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
@@ -50,7 +51,7 @@ func (app *App) Create(c *echo.Context) error {
 }
 
 // Returns the value for the given key
-func (app *App) Read(c *echo.Context) error {
+func (app *App) Read(c echo.Context) error {
 	// Look for the value
 	data := app.Store[c.Param("user")].Get("store", c.Param("_*"))
 	if data == nil {
@@ -61,7 +62,7 @@ func (app *App) Read(c *echo.Context) error {
 }
 
 // Updates the value of an already existing key, (returns [404] if it does not exist?)
-func (app *App) Update(c *echo.Context) error {
+func (app *App) Update(c echo.Context) error {
 	// If request body can't be read, return [400]
 	data, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
@@ -82,7 +83,7 @@ func (app *App) Update(c *echo.Context) error {
 }
 
 // Deletes a key and it's value.
-func (app *App) Delete(c *echo.Context) error {
+func (app *App) Delete(c echo.Context) error {
 	// Get params (check params?)
 	user, key := c.Param("user"), c.Param("_*")
 	err := app.Store[user].Del("store", key)
@@ -94,6 +95,6 @@ func (app *App) Delete(c *echo.Context) error {
 
 // WIP? Need implementation, operations via websocket should allow all CRUD operations
 // with a single persistent connection.
-func (app *App) WebSocket(c *echo.Context) error {
+func (app *App) WebSocket(c echo.Context) error {
 	return c.String(http.StatusNotFound, "Not implemented")
 }

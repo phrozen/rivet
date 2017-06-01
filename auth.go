@@ -79,9 +79,9 @@ func (app *App) DestroySession(user string) error {
 // for the X-Session-Token Header, decodes the session and authenticates the user to
 // it's resources in the store. Returns [400] for a bad token, [401] for non valid
 // sessions, and proceeds with request otherwise.
-func Auth(app *App) echo.HandlerFunc {
+func (app *App) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
-	return func(c *echo.Context) error {
+	return func(c echo.Context) error {
 		//Check for session token
 		header := c.Request().Header.Get("X-Session-Token")
 
@@ -118,7 +118,7 @@ func Auth(app *App) echo.HandlerFunc {
 // If authentication is successful, it returns [200] and a 32 byte X-Session-Token in a hex encoded string.
 // All authenticated requests should include the X-Session-Token header with this value, if the token is no longer
 // valid due to logout or expiration, a [401] usually means you have to call this login endpoint again and obtain a new token.
-func (app *App) Login(c *echo.Context) error {
+func (app *App) Login(c echo.Context) error {
 	//Check for Basic Authentication Header
 	user, pass, ok := c.Request().BasicAuth()
 	if !ok {
@@ -135,7 +135,7 @@ func (app *App) Login(c *echo.Context) error {
 // Logout route (/logout), destroys the X-Session-Token for a given user making it no longer valid.
 // To logout the route expects the user credentials as Basic Authentication header to destroy the session.
 // All subsecuent requests using the previous X-Session-Token will receive [401] and needs to login again.
-func (app *App) Logout(c *echo.Context) error {
+func (app *App) Logout(c echo.Context) error {
 	//Check for Basic Authentication Header
 	user, pass, ok := c.Request().BasicAuth()
 	if !ok {

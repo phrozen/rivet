@@ -14,18 +14,18 @@ func main() {
 
 	e := echo.New()
 
-	e.Get("/login", app.Login)
-	e.Get("/logout", app.Logout)
+	e.GET("/login", app.Login)
+	e.GET("/logout", app.Logout)
 
 	s := e.Group("/store")
-	s.Use(Auth(app))
-	s.Get("/:user", app.List)
-	s.Get("/:user/*", app.Read)
-	s.Post("/:user/*", app.Create)
-	s.Put("/:user/*", app.Update)
-	s.Delete("/:user/*", app.Delete)
-	s.WebSocket("/:user/websocket", app.WebSocket)
+	s.Use(app.Auth)
+	s.GET("/:user", app.List)
+	s.GET("/:user/*", app.Read)
+	s.POST("/:user/*", app.Create)
+	s.PUT("/:user/*", app.Update)
+	s.DELETE("/:user/*", app.Delete)
+	//s.WebSocket("/:user/websocket", app.WebSocket)
 
-	e.Run(":" + app.Config.Port)
+	e.Start(":" + app.Config.Port)
 
 }
