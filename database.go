@@ -3,17 +3,16 @@ package main
 import (
 	"io"
 	//"fmt"
-	"github.com/boltdb/bolt"
+	bolt "go.etcd.io/bbolt"
 )
 
 // BoltDB Wrappers
-
-// Wrapper for the BoltDB handler
+// BoltDB Wrapper for the BoltDB handler
 type BoltDB struct {
 	db *bolt.DB
 }
 
-// Creates a new BoltDB database given the *bolt.DB handler
+// NewBoltDB creates a new BoltDB database given the *bolt.DB handler
 func NewBoltDB(path string) (*BoltDB, error) {
 	db, err := bolt.Open(path, 0600, nil)
 	if err != nil {
@@ -22,12 +21,12 @@ func NewBoltDB(path string) (*BoltDB, error) {
 	return &BoltDB{db}, nil
 }
 
-// Returns the BoltDB raw database handler
+// DB returns the BoltDB raw database handler
 func (bd BoltDB) DB() *bolt.DB {
 	return bd.db
 }
 
-// Return true if the key in bucket exists, false otherwise.
+// Has return true if the key in bucket exists, false otherwise.
 func (bd BoltDB) Has(bucket, key string) bool {
 	exist := false
 	bd.db.View(func(tx *bolt.Tx) error {
@@ -40,7 +39,7 @@ func (bd BoltDB) Has(bucket, key string) bool {
 	return exist
 }
 
-// Returns an array of all the keys in the bucket starting from offset.
+// All returns an array of all the keys in the bucket starting from offset.
 // If offset is "" then starts from the first key available.
 // Limit specifies the max length of the array, if 0, then de MAX_LIMIT default will be used.
 func (bd BoltDB) All(bucket, offset string, limit int) []string {
@@ -95,7 +94,7 @@ func (bd BoltDB) Set(bucket, key string, value []byte) error {
 	})
 }
 
-// Delete the value of the given key inside the bucket.
+// Del the value of the given key inside the bucket.
 func (bd BoltDB) Del(bucket, key string) error {
 	return bd.db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(bucket))
@@ -103,7 +102,7 @@ func (bd BoltDB) Del(bucket, key string) error {
 	})
 }
 
-// Creates Bucket if it does not exist
+// CreateBucketIfNotExist creates a bucket if it does not exist
 func (bd BoltDB) CreateBucketIfNotExist(bucket string) error {
 	return bd.db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte(bucket))
@@ -111,7 +110,7 @@ func (bd BoltDB) CreateBucketIfNotExist(bucket string) error {
 	})
 }
 
-// Returns the size of the database in bytes, used to check for
+// Size returns the size of the database in bytes, used to check for
 // storage limits and Content-Length header when backing up.
 func (bd BoltDB) Size() (size int64) {
 	bd.db.View(func(tx *bolt.Tx) error {
@@ -121,7 +120,7 @@ func (bd BoltDB) Size() (size int64) {
 	return size
 }
 
-// Backups the entire database to the given io.Writer() interface.
+// Backup the entire database to the given io.Writer() interface.
 // Useful for passing an http.ResponseWriter() or an os.File()
 // for backup purposes via http or timestamp.
 func (bd BoltDB) Backup(w io.Writer) error {
