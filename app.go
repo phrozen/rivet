@@ -1,15 +1,15 @@
 package main
 
-import (
 //"fmt"
-)
 
+// App ...
 type App struct {
 	System *BoltDB
 	Store  map[string]*BoltDB
 	Config *Config
 }
 
+// NewApp ...
 func NewApp(cfg *Config) *App {
 	app := new(App)
 

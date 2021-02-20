@@ -5,10 +5,12 @@ import (
 	"os"
 )
 
+// Constants
 const (
 	LIMIT = 10000
 )
 
+// Config ...
 type Config struct {
 	// Server
 	Port string
@@ -16,6 +18,7 @@ type Config struct {
 	DatabasePath string
 }
 
+// NewConfig ...
 func NewConfig() *Config {
 	cfg := new(Config)
 	flag.StringVar(&cfg.DatabasePath, "db", os.Getenv("RIVET_DATABASE_PATH"), "Path/folder to store/open the database files.")

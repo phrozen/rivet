@@ -11,7 +11,7 @@ import (
 
 // #ROUTES
 
-// Lists all the keys in the bucket starting from "offset" key up to "limit" number of keys.
+// List all the keys in the bucket starting from "offset" key up to "limit" number of keys.
 // This returns all the keys joined by "\n" so a simple split will give back an array.
 func (app *App) List(c echo.Context) error {
 	// Check that we can parse limit, ignore errors
@@ -25,7 +25,7 @@ func (app *App) List(c echo.Context) error {
 	return c.String(http.StatusOK, strings.Join(data, "\n"))
 }
 
-// Sets a value for key if not exist, returns [201] on creation, [200] if existed,
+// Create a value for key if not exist, returns [201] on creation, [200] if existed,
 // [400] if request body can't be read, and [500] if error saving the data.
 // Different status codes are useful to know if they key existed previously.
 func (app *App) Create(c echo.Context) error {
@@ -50,7 +50,7 @@ func (app *App) Create(c echo.Context) error {
 	return c.String(http.StatusOK, key)
 }
 
-// Returns the value for the given key
+// Read the value for the given key
 func (app *App) Read(c echo.Context) error {
 	// Look for the value
 	data := app.Store[c.Param("user")].Get("store", c.Param("_*"))
@@ -61,7 +61,7 @@ func (app *App) Read(c echo.Context) error {
 	return c.String(http.StatusOK, string(data))
 }
 
-// Updates the value of an already existing key, (returns [404] if it does not exist?)
+// Update the value of an already existing key, (returns [404] if it does not exist?)
 func (app *App) Update(c echo.Context) error {
 	// If request body can't be read, return [400]
 	data, err := ioutil.ReadAll(c.Request().Body)
@@ -82,7 +82,7 @@ func (app *App) Update(c echo.Context) error {
 	return c.String(http.StatusOK, key)
 }
 
-// Deletes a key and it's value.
+// Delete a key and it's value.
 func (app *App) Delete(c echo.Context) error {
 	// Get params (check params?)
 	user, key := c.Param("user"), c.Param("_*")
@@ -93,7 +93,7 @@ func (app *App) Delete(c echo.Context) error {
 	return c.String(http.StatusOK, key)
 }
 
-// WIP? Need implementation, operations via websocket should allow all CRUD operations
+// WebSocket WIP? Need implementation, operations via websocket should allow all CRUD operations
 // with a single persistent connection.
 func (app *App) WebSocket(c echo.Context) error {
 	return c.String(http.StatusNotFound, "Not implemented")

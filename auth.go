@@ -5,12 +5,13 @@ import (
 	"encoding/hex"
 	"io"
 	"net/http"
+
 	// Framework
 	"github.com/labstack/echo"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Utility function that generates cryptographic secure randome byte slices.
+// GenerateRandomKey generates cryptographic secure randome byte slices.
 // Receives just the length of the slice, used for tokens.
 func GenerateRandomKey(length int) []byte {
 	k := make([]byte, length)
@@ -20,7 +21,7 @@ func GenerateRandomKey(length int) []byte {
 	return k
 }
 
-// Creates a new user and saves the username and BCrypt hashed password.
+// SetUserPassword creates a new user and saves the username and BCrypt hashed password.
 func (app *App) SetUserPassword(username, password string) error {
 	// Hash the password using Bcrypt with default cost
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -31,7 +32,7 @@ func (app *App) SetUserPassword(username, password string) error {
 	return app.System.Set("user", username, hash)
 }
 
-// Authenticates username/passsword combination.
+// Authenticate username/passsword combination.
 func (app *App) Authenticate(username, password string) bool {
 	//Check if user exists
 	hash := app.System.Get("user", username)
@@ -45,7 +46,7 @@ func (app *App) Authenticate(username, password string) bool {
 	return true
 }
 
-// Creates a new Session Token for the user, saves the session and returns a session token.
+// NewSession xceates a new Session Token for the user, saves the session and returns a session token.
 func (app *App) NewSession(user string) string {
 	// Check if session already exists and return the existing token
 	token := app.System.Get("session", user)
@@ -65,6 +66,7 @@ func (app *App) NewSession(user string) string {
 	return hex.EncodeToString(token)
 }
 
+// DestroySession destroys the session token for the user
 func (app *App) DestroySession(user string) error {
 	// If token doesn't exist just return
 	token := app.System.Get("session", user)
@@ -75,7 +77,7 @@ func (app *App) DestroySession(user string) error {
 	return app.System.Del("session", user)
 }
 
-// Authentication middleware using Session Tokens, every request handled is checked
+// Auth is the authentication middleware using Session Tokens, every request handled is checked
 // for the X-Session-Token Header, decodes the session and authenticates the user to
 // it's resources in the store. Returns [400] for a bad token, [401] for non valid
 // sessions, and proceeds with request otherwise.
